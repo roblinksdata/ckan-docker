@@ -10,6 +10,32 @@ COPY --chown=ckan-sys:ckan-sys docker-entrypoint.d/* /docker-entrypoint.d/
 # runtime mounted ones)
 COPY --chown=ckan-sys:ckan-sys patches ${APP_DIR}/patches
 
+USER root
+
+# Install vim for later convenience
+RUN apt-get update && apt-get install -y vim
+
+# Install CKAN sitemap.xml extension #
+RUN  pip3 install -e 'git+https://github.com/datopian/ckanext-sitemap.git@master#egg=ckanext-sitemap'  && \
+     pip3 install -r https://raw.githubusercontent.com/datopian/ckanext-sitemap/refs/heads/master/requirements.txt
+
+# Fix future file permission issues
+RUN chown -R ckan /srv/app/src/ckanext-sitemap 
+RUN chgrp -R ckan-sys /srv/app/src/ckanext-sitemap 
+
+RUN echo "ckanext.sitemap.autorenew = True" >> /srv/app/ckan.ini
+
+# Install CKAN DCAT extension #
+RUN  pip3 install -e 'git+https://github.com/ckan/ckanext-dcat.git@v2.1.0#egg=ckanext-dcat'  && \
+     pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-dcat/v2.1.0/requirements.txt
+
+# Fix future file permission issues
+RUN chown -R ckan /srv/app/src/ckanext-dcat
+RUN chgrp -R ckan-sys /srv/app/src/ckanext-dcat
+
+# Install tool to make the below patch functionality work.
+RUN apt-get update && apt-get install -y patch
+
 USER ckan
 
 RUN for d in $APP_DIR/patches/*; do \

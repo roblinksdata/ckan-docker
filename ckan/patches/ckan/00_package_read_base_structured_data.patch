@@ -1,0 +1,19 @@
+:100644 100644 af1a47fc8 000000000 M    ckan/templates/package/read_base.html
+
+diff --git a/ckan/templates/package/read_base.html b/ckan/templates/package/read_base.html
+index af1a47fc8..497d4dbb6 100644
+--- a/ckan/templates/package/read_base.html
++++ b/ckan/templates/package/read_base.html
+@@ -12,6 +12,12 @@
+   <meta property="og:description" content="{{ description|forceescape|trim }}">
+ {% endblock -%}
+ 
++{% block structured_data %}
++  <script type="application/ld+json">
++
++  </script>
++{% endblock %}
++
+ {% block content_action %}
+   {% if h.check_access('package_update', {'id':pkg.id }) %}
+     {% link_for _('Manage'), named_route=pkg.type ~ '.edit', id=pkg.name, class_='btn btn-light', icon='wrench' %}
